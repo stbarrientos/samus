@@ -1,0 +1,9 @@
+services:
+  dev:
+    build:
+      context: .
+    volumes:
+      - ./samus/:/usr/samus
+  release:
+    build:
+      context: .
