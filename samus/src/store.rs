@@ -8,8 +8,8 @@ pub struct Store {
 }
 
 impl Store {
-  fn new() -> Self {
-    Self {
+  fn new() -> Store {
+    Store {
       store: HashMap::new(),
     }
   }
@@ -27,10 +27,10 @@ impl Store {
       value: value,
       ttl: ttl,
     };
-    let insertion = self.store.insert(key, store_value);
+    let insertion = self.store.insert(key, store_value.clone());
     match insertion {
-      Some(inserted_value) => Ok(inserted_value.value.clone()),
-      None => Err("Instertion failed")
+      Some(_insterted_value) => Ok(store_value.value.clone()),
+      None => Ok(store_value.value.clone())
     }
   }
 
@@ -49,7 +49,7 @@ mod tests {
 
   #[test]
   fn test_get_and_set() {
-    let store = Store::new();
+    let mut store = Store::new();
     store.set("key".to_string(), "value".to_string(), 1000).unwrap();
     let store_value = store.get("key".to_string()).unwrap();
     assert_eq!(store_value, "value");
@@ -59,11 +59,8 @@ mod tests {
   fn test_get_failure() {}
 
   #[test]
-  fn test_set_failure() {}
-
-  #[test]
   fn test_delete() {
-    let store = Store::new();
+    let mut store = Store::new();
     store.set("key".to_string(), "value".to_string(), 1000).unwrap();
     store.delete("key".to_string()).unwrap();
     let store_value = store.get("key".to_string());
