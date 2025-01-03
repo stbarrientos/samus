@@ -4,6 +4,8 @@ services:
       context: .
     volumes:
       - ./samus/:/usr/samus
+    ports:
+      - 6666:6666
   release:
     build:
       context: .

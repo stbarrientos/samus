@@ -8,37 +8,37 @@ pub struct Store {
 }
 
 impl Store {
-  fn new() -> Store {
+  pub fn new() -> Store {
     Store {
       store: HashMap::new(),
     }
   }
 
-  fn get(&self, key: String) -> Result<String> {
-    let fetch = self.store.get(&key);
+  pub fn get(&self, key: &String) -> Result<String> {
+    let fetch = self.store.get(key);
     match fetch {
       Some(store_value) => Ok(store_value.value.clone()),
       None => Err("Key not found")
     } 
   }
 
-  fn set(&mut self, key: String, value: String, ttl: i64) -> Result<String> {
+  pub fn set(&mut self, key: &String, value: &String, ttl: &i64) -> Result<String> {
     let store_value = StoreValue {
-      value: value,
-      ttl: ttl,
+      value: value.clone(),
+      ttl: ttl.clone(),
     };
-    let insertion = self.store.insert(key, store_value.clone());
+    let insertion = self.store.insert(key.clone(), store_value.clone());
     match insertion {
-      Some(_insterted_value) => Ok(store_value.value.clone()),
-      None => Ok(store_value.value.clone())
+      Some(_) => Ok(value.clone()),
+      None => Ok(value.clone())
     }
   }
 
-  fn delete(&mut self, key: String) -> Result<()> {
-    let deletion = self.store.remove(&key);
+  pub fn delete(&mut self, key: &String) -> Result<String> {
+    let deletion = self.store.remove(key);
     match deletion {
-      Some(_deleted_value) => Ok(()),
-      None => Err("Deletion failed")
+      Some(deleted_value) => Ok(deleted_value.value),
+      None => Ok("".to_string())
     }
   }
 }
@@ -50,20 +50,23 @@ mod tests {
   #[test]
   fn test_get_and_set() {
     let mut store = Store::new();
-    store.set("key".to_string(), "value".to_string(), 1000).unwrap();
-    let store_value = store.get("key".to_string()).unwrap();
+    let test_key = "key".to_string();
+    let test_value = "value".to_string();
+    let test_ttl = 1000;
+    store.set(&test_key, &test_value, &test_ttl).unwrap();
+    let store_value = store.get(&test_key).unwrap();
     assert_eq!(store_value, "value");
   }
 
   #[test]
-  fn test_get_failure() {}
-
-  #[test]
   fn test_delete() {
     let mut store = Store::new();
-    store.set("key".to_string(), "value".to_string(), 1000).unwrap();
-    store.delete("key".to_string()).unwrap();
-    let store_value = store.get("key".to_string());
+    let test_key = "key".to_string();
+    let test_value = "value".to_string();
+    let test_ttl = 1000;
+    store.set(&test_key, &test_value, &test_ttl).unwrap();
+    store.delete(&test_key).unwrap();
+    let store_value = store.get(&test_key);
     assert_eq!(store_value.is_err(), true);
   }
 }
